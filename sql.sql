@@ -1,0 +1,7 @@
+--- IF YOU USE THIS, EVERYONE IS NEWPLAYER AND NEED CITIZENSHIP
+CREATE TABLE IF NOT EXISTS `users` (
+  `newPlayer` varchar(1) COLLATE utf8_bin DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+ALTER TABLE `users` ADD COLUMN `newPlayer` varchar(1) COLLATE utf8_bin DEFAULT '1';
+ALTER TABLE `users` ADD PRIMARY KEY (`identifier`);
