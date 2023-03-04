@@ -13,63 +13,58 @@ end)
 RegisterNetEvent('newPlayer')
 AddEventHandler('newPlayer', function(bool)
     newPlayer = bool
-    local ped = GetPlayerPed(-1)
-end)
 
 
-
-RegisterCommand('newPlayer', function(source, args, rawCommand)
-    print(newPlayer)
-    TriggerEvent('newPlayer', true)
-    print (newPlayer)  
-end, false)
-
-CreateThread(function()
-    while true do
-        Wait(10000)
-        if newPlayer then
-           local ped = PlayerPedId()
-           local coords = GetEntityCoords(ped)
-           local distance = #(coords - Settings.Teleports.spawn.coords)
-
-           if distance > 100 then
-               SetEntityCoords(ped, Settings.Teleports.spawn.coords)
-               SetEntityHeading(ped, Settings.Teleports.spawn.coords)
-           end
-        end
+    if newPlayer then
+        newPlayerThread()
     end
 end)
 
 
-CreateThread(function()
-    if Settings.SafeZone then
-        while true do
-            Wait(1)
+newPlayerThread = function()
+    CreateThread(function()
+        while newPlayer do
+            Wait(5000)
 
-            if newPlayer then
-                local ped = PlayerPedId()
-                if ped then
-                    SetPedCanSwitchWeapon(ped, false)
-                    SetCurrentPedWeapon(ped, GetHashKey("WEAPON_UNARMED"), true)
-                    SetPlayerInvincible(ped, true)
-                    SetEntityInvincible(ped, true)
-                    SetEntityCanBeDamaged(ped, false)
-                    DisableControlAction(0, 24, true) -- attack
-                    DisableControlAction(0, 25, true) -- aim
+            local ped = PlayerPedId()
+            local coords = GetEntityCoords(ped)
+            local distance = #(coords - Settings.Teleports.spawn.coords)
+
+            if distance > 100 then
+                SetEntityCoords(ped, Settings.Teleports.spawn.coords)
+                SetEntityHeading(ped, Settings.Teleports.spawn.coords)
+            end
+        end
+    end)
+
+    CreateThread(function()
+        if Settings.SafeZone then
+            while newPlayer do
+                Wait(1)
+    
+                if newPlayer then
+                    local ped = PlayerPedId()
+                    if ped then
+                        SetPedCanSwitchWeapon(ped, false)
+                        SetCurrentPedWeapon(ped, GetHashKey("WEAPON_UNARMED"), true)
+                        SetPlayerInvincible(ped, true)
+                        SetEntityInvincible(ped, true)
+                        SetEntityCanBeDamaged(ped, false)
+                        DisableControlAction(0, 24, true) -- attack
+                        DisableControlAction(0, 25, true) -- aim
+                    end
                 end
             end
         end
-    end
-end)
+    end)
 
-CreateThread(function()
-    while true do
-        Wait(1)
-        local ped = PlayerPedId()
-        local coords = GetEntityCoords(ped)
-        local distance = #(coords - Settings.callCoords)
+    CreateThread(function()
+        while newPlayer do
+            Wait(1)
+            local ped = PlayerPedId()
+            local coords = GetEntityCoords(ped)
+            local distance = #(coords - Settings.callCoords)
 
-        if newPlayer then
             if distance < 15 then
                 DrawMarker(1, Settings.callCoords.x, Settings.callCoords.y, Settings.callCoords.z, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 255, 0, 0, 255, 0, 0, 0, 0)	
                 if distance < 2 then
@@ -84,8 +79,8 @@ CreateThread(function()
                 Wait(1000)
             end
         end
-    end
-end)
+    end)
+end
 
 
 showIds = false
@@ -102,13 +97,12 @@ end)
 IDshow = function()
     CreateThread(function()
         while true do
-            Wait(1)
+            Wait(0)
             if showIds == true then
                 local ped = PlayerPedId()
                 local coords = GetEntityCoords(ped)
                     local players = GetActivePlayers()
                     for i = 1, #players do
-                    local otherPlayer = GetPlayerPed(players[i])
                     local otherPlayerName = GetPlayerName(players[i])
                     local otherPlayerId = GetPlayerServerId(players[i])
                     local otherPlayerPed = GetPlayerPed(players[i])
@@ -126,7 +120,6 @@ IDshow = function()
             end
         end
     end)
-
 end
 
 
