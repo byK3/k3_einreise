@@ -80,7 +80,7 @@ Settings.Discord = { -- if you dont want to use a webhook, just leave it blank a
 
 
 Settings.NotifyServer = function(source, msg)
-    TriggerClientEvent('notifications', source, 'RED', 'EINREISE', msg)
+    TriggerClientEvent('esx:showNotification', source, msg)
 end
 
 
