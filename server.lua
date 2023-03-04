@@ -1,6 +1,5 @@
 RegisterNetEvent('byK3-spawnEvent')
 AddEventHandler('byK3-spawnEvent', function()
-
     local src = source
     local xPlayer = ESX.GetPlayerFromId(source)
     local xPlayers = ESX.GetExtendedPlayers()
@@ -15,7 +14,7 @@ AddEventHandler('byK3-spawnEvent', function()
                 for i = 1, #xPlayers, 1 do
                     local xAdmins = ESX.GetPlayerFromId(xPlayers[i].source)
                     if Settings.Ranks[xAdmins.getGroup()] then
-                        notify(xPlayers[i].source, (Locales.NewPlayerArrived):format(steamName))
+                        Settings.NotifyServer(xPlayers[i].source, (Locales.NewPlayerArrived):format(steamName))
                     end
                 end
                 newTP(src)
@@ -24,9 +23,8 @@ AddEventHandler('byK3-spawnEvent', function()
                 TriggerClientEvent('newPlayer', src, false)
             end
         end
-    end)
+    end)    
 end)
-
 
 newTP = function(source)
     local xPlayer = ESX.GetPlayerFromId(source)
@@ -38,7 +36,6 @@ newTP = function(source)
 end
 
 welcomeTP = function(source)
-    local xPlayer = ESX.GetPlayerFromId(source)
     local ped = GetPlayerPed(source)
     SetEntityCoords(GetPlayerPed(source), Settings.Teleports.leave.coords)
     SetEntityHeading(ped, Settings.Teleports.leave.heading)
@@ -59,22 +56,22 @@ RegisterCommand(Settings.Commands.giveCitizenship, function(source, args, rawCom
                     ['@identifier'] = xTarget.identifier
                 }, function(rowsChanged)
                     if rowsChanged == 1 then
-                        notify(source, (Locales.GiveCitizenship):format(xTarget.name))
-                        notify(xTarget.source, Locales.GotCitizenship)
+                        Settings.NotifyServer(source, (Locales.GiveCitizenship):format(xTarget.name))
+                        Settings.NotifyServer(xTarget.source, Locales.GotCitizenship)
                         welcomeTP(xTarget.source)
-                        TriggerClientEvent('newPlayer', target.source, false)
+                        TriggerClientEvent('newPlayer', xTarget.source, false)
                     else
-                        notify(source, 'Something went wrong')
+                        Settings.NotifyServer(source, 'Something went wrong')
                     end
                 end)
             else
-                notify(source, 'Player not found')
+                Settings.NotifyServer(source, 'Player not found')
             end
         else
-            notify(source, 'Invalid target')
+            Settings.NotifyServer(source, 'Invalid target')
         end
     else
-        notify(source, 'You are not allowed to do this')
+        Settings.NotifyServer(source, 'You are not allowed to do this')
     end
 end, false)
 
@@ -96,21 +93,21 @@ RegisterCommand(Settings.Commands.removeCitizenship, function(source, args, rawC
                     ['@identifier'] = xTarget.identifier
                 }, function(rowsChanged)
                     if rowsChanged == 1 then
-                        notify(source, (Locales.RemoveCitizenship):format(xTarget.name))
-                        notify(xTarget.source, (Locales.GotRemovedCitizenship):format(steamName, reason))
+                        Settings.NotifyServer(source, (Locales.RemoveCitizenship):format(xTarget.name))
+                        Settings.NotifyServer(xTarget.source, (Locales.GotRemovedCitizenship):format(steamName, reason))
                         DropPlayer(xTarget.source, (Locales.KickMessage):format(steamName, reason))
                     else
-                        notify(source, 'Something went wrong')
+                        Settings.NotifyServer(source, 'Something went wrong')
                     end
                 end)
             else
-                notify(source, 'Player not found')
+                Settings.NotifyServer(source, 'Player not found')
             end
         else
-            notify(source, 'Invalid target')
+            Settings.NotifyServer(source, 'Invalid target')
         end
     else
-        notify(source, 'You are not allowed to do this')
+        Settings.NotifyServer(source, 'You are not allowed to do this')
     end
 end, false)
 
@@ -135,7 +132,7 @@ RegisterCommand(Settings.Commands.enter, function(source, args, rawCommand)
             end
         end
     else
-        notify(source, Locales.AlreadyInImmigration)
+        Settings.NotifyServer(source, Locales.AlreadyInImmigration)
     end
 end, false)
 
@@ -165,7 +162,6 @@ end, false)
 local button = 0
 RegisterNetEvent('callAdmin')
 AddEventHandler('callAdmin', function()
-    local xPlayer = ESX.GetPlayerFromId(source)
     local steamName = GetPlayerName(source)
     local xPlayers = ESX.GetExtendedPlayers()
 
@@ -176,7 +172,7 @@ AddEventHandler('callAdmin', function()
         if xTarget then
             local group = xTarget.getGroup()
             if Settings.Ranks[group] then
-                notify(xTarget.source, (Locales.CallAdmin):format(steamName))
+                Settings.NotifyServer(xTarget.source, (Locales.CallAdmin):format(steamName))
             end
         end
     end
@@ -184,7 +180,6 @@ end)
 
 buttonPress = function(source)
     CreateThread(function()    
-        local xPlayer = ESX.GetPlayerFromId(source)        
         button = button + 1
         Citizen.Wait(Settings.callCooldown * 1000)
         button = button - 1
@@ -199,30 +194,29 @@ RegisterCommand(Settings.Commands.resetplayer, function(source, args, rawCommand
     local type = args[1]
     local target = tonumber(args[2])
     local xTarget = ESX.GetPlayerFromId(target)
-    local targetName = GetPlayerName(target)
 
     if Settings.Ranks[group] then
         if type == 'skin' then
             if xTarget then
                 TriggerClientEvent(Settings.Triggers.skinOpen, xTarget.source)
-                notify(source, (Locales.ResetSkin):format(xTarget.name))
-                notify(xTarget.source, (Locales.GotResetSkin):format(steamName))
+                Settings.NotifyServer(source, (Locales.ResetSkin):format(xTarget.name))
+                Settings.NotifyServer(xTarget.source, (Locales.GotResetSkin):format(steamName))
             else
-                notify(source, 'Player not found')
+                Settings.NotifyServer(source, 'Player not found')
             end
         elseif type == 'identity' then
             if xTarget then
                 TriggerClientEvent(Settings.Triggers.identity, xTarget.source)
-                notify(source, (Locales.ResetIdentity):format(xTarget.name))
-                notify(xTarget.source, (Locales.GotResetIdentity):format(steamName))
+                Settings.NotifyServer(source, (Locales.ResetIdentity):format(xTarget.name))
+                Settings.NotifyServer(xTarget.source, (Locales.GotResetIdentity):format(steamName))
             else
-                notify(source, 'Player not found')
+                Settings.NotifyServer(source, 'Player not found')
             end
         else
-            notify(source, 'Invalid type given')
+            Settings.NotifyServer(source, 'Invalid type given')
         end
     else
-        notify(source, 'You are not allowed to do this')
+        Settings.NotifyServer(source, 'You are not allowed to do this')
     end
 end, false)
 
@@ -244,5 +238,3 @@ function DiscordLog(msg)
     }
     PerformHttpRequest(Settings.Discord.webhook, function(err, text, headers)end, 'POST', json.encode({username = 'CITIZENSHIP', avatar_url= Settings.Discord.avatar ,embeds = embedMsg}), { ['Content-Type']= 'application/json' })
 end
-
-
