@@ -79,6 +79,11 @@ Settings.Discord = { -- if you dont want to use a webhook, just leave it blank a
 }
 
 
+Settings.NotifyServer = function(source, msg)
+    TriggerClientEvent('notifications', source, 'RED', 'EINREISE', msg)
+end
+
+
 -- == LOCALES == --
 Locales.CallAdmin = "Player: %s is calling for an admin"
 Locales.NewPlayerArrived = "New Player: %s has arrived and is waiting for immigration"
@@ -90,5 +95,5 @@ Locales.KickMessage = "[CITIZENSHIP] Your citizenship has been removed by: %s | 
 Locales.AlreadyInImmigration = "You are already entered the Immigration Center"
 Locales.ResetSkin = "You have reseted the skin of: %s"
 Locales.GotResetSkin = "Your skin has been reseted by: %s"
-Locales.Locales.ResetIdentity = "You have reseted the identity of: %s"
+Locales.ResetIdentity = "You have reseted the identity of: %s"
 Locales.GotResetIdentity = "Your identity has been reseted by: %s"
